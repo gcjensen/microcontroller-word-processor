@@ -3,7 +3,7 @@
 
 #define SPACE	6
 #define LINE_BUFF_LEN 55
-
+#define LINE_LENGTH 40
 
 int check_switches(int);
 void printKeyboard(int);
@@ -14,13 +14,15 @@ void saveLine();
 void saveCharacter(char);
 void removeCharacter();
 void loadFile();
+void writeToFile();
+int isEven(int);
 
-char* uppercaseAlphabet = " A B C D E F G H I J K L M N O P Q R S T U V W X Y Z ";
+// [ ] denotes the currently selected letter, so starts on a
 char* alphabet = "[a]b c d e f g h i j k l m n o p q r s t u v w x y z \n _ < > . , ! ? 1 2 3 4 5 6 7 8 9 0 ";
 int selector = 1;
 struct cursors cursor;
-char currentLine[20];
-char lines[20][20];
+char currentLine[LINE_LENGTH];
+char lines[LINE_LENGTH][LINE_LENGTH];
 
 FIL File;
 
@@ -54,27 +56,8 @@ void printKeyboard(int direction) {
 int check_switches(int state) {
 
   if (get_switch_press(_BV(SWN))) {
-    f_mount(&FatFs, "", 0);
-		if (f_open(&File, "myfile.txt", FA_WRITE | FA_OPEN_ALWAYS) == FR_OK) {
-      int i;
-      for (i = 0; i < 20; i++) {
-        f_puts("                    ", &File);
-        f_puts("\r\n", &File);
-      }
-      f_close(&File);
-      if (f_open(&File, "myfile.txt", FA_WRITE | FA_OPEN_ALWAYS) == FR_OK) {
-        for (i = 0; i < 20; i++) {
-          f_puts(lines[i], &File);
-          f_puts("\r\n", &File);
-        }
-        display_string("Write successful \n");
-			  f_close(&File);
-      } else {
-        display_string("Can't write file! \n");
-      }
-		} else {
-			display_string("Can't write file! \n");
-		}
+      saveLine();
+      writeToFile();
   }
 
   if (get_switch_press(_BV(SWS))) {
@@ -120,15 +103,6 @@ int check_switches(int state) {
       }
       calibrate();
 	}
-
-  if (get_switch_long(_BV(SWC))) {
-		display_string("Detected SD card.\n");
-	}
-
-  if (get_switch_long(_BV(OS_CD))) {
-		display_string("Detected SD card.\n");
-	}
-
 	return state;
 }
 
@@ -139,7 +113,7 @@ void calibrate() {
 
 void fillArrays() {
   int i;
-  for (i = 0; i < 20; i++){
+  for (i = 0; i < LINE_LENGTH; i++){
     currentLine[i] = ' ';
     strcpy(lines[i], " ");
   }
@@ -147,10 +121,10 @@ void fillArrays() {
 
 void saveLine() {
   int i;
-  for (i = 0; i < 20; i++) {
+  for (i = 0; i < LINE_LENGTH; i++) {
     if (strcmp(lines[i], " ") == 0) {
       strcpy(lines[i], currentLine);
-      for (i = 0; i < 20; i++){
+      for (i = 0; i < LINE_LENGTH; i++){
         currentLine[i] = ' ';
       }
       return;
@@ -170,7 +144,7 @@ void saveCharacter(char c) {
 
 void removeCharacter() {
   int i;
-  for (i = 19; i >= 0; i--) {
+  for (i = LINE_LENGTH - 1; i >= 0; i--) {
     if (currentLine[i] != ' ') {
       currentLine[i] = ' ';
       return;
@@ -178,19 +152,48 @@ void removeCharacter() {
   }
 }
 
+void writeToFile() {
+  f_mount(&FatFs, "", 0);
+  // file contents is initially wiped
+  if (f_open(&File, "myfile.txt", FA_WRITE | FA_OPEN_ALWAYS) == FR_OK) {
+    int i;
+    for (i = 0; i < LINE_LENGTH; i++) {
+      f_puts("                    ", &File);
+      f_puts("\n", &File);
+    }
+    f_close(&File);
+    if (f_open(&File, "myfile.txt", FA_WRITE | FA_OPEN_ALWAYS) == FR_OK) {
+      for (i = 0; i < LINE_LENGTH; i++) {
+        f_puts(lines[i], &File);
+        f_puts("\n", &File);
+      }
+      display_string("Write successful \n");
+      f_close(&File);
+    } else {
+      display_string("Can't write file! \n");
+    }
+  } else {
+    display_string("Can't write file! \n");
+  }
+}
+
 void loadFile() {
-  char line[20][LINE_BUFF_LEN];
+  char line[LINE_LENGTH][LINE_BUFF_LEN];
+  int8_t i;
+  clear_screen();
+  printKeyboard(0);
 
 	f_mount(&FatFs, "", 0);
 	if (f_open(&File, "myfile.txt", FA_READ) == FR_OK) {
     display.x = 0;
     display.y = 0;
-    int i;
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < LINE_LENGTH; i++) {
       f_gets(line[i], LINE_BUFF_LEN, &File);
-      display_string(lines[i]);
-      display.x = 0;
-      display.y += 4;
+      // skips over the strange blank lines in the file
+      if (isEven(i)) {
+        display_string(line[i]);
+        display.x = 0;
+      }
     }
     cursor.xPosition = display.x;
     cursor.yPosition = display.y;
@@ -198,4 +201,8 @@ void loadFile() {
 	} else {
 		display_string("Can't read file! \n");
 	}
+}
+
+int isEven(int i) {
+  return ((i & 1) == 0);
 }
