@@ -106,7 +106,7 @@ int check_switches(int state) {
         cursor.xPosition += SPACE;
       } else if (alphabet[selector] == '<') {
         cursor.xPosition -= SPACE;
-        removeCharacter(); //implement this
+        removeCharacter();
         calibrate();
         display_char(' ');
       } else if (alphabet[selector] == '>') {
@@ -165,7 +165,13 @@ void saveCharacter(char c) {
 }
 
 void removeCharacter() {
-  //implement this
+  int i;
+  for (i = 19; i >= 0; i--) {
+    if (currentLine[i] != ' ') {
+      currentLine[i] = ' ';
+      return;
+    }
+  }
 }
 
 void loadFile() {
