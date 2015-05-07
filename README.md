@@ -22,5 +22,3 @@ Known bugs:
 
   - Strange symbols sometimes appear when reading from
     the SD card
-  - After reading from the SD card the device has to be
-    restarted to be able to enter text again
