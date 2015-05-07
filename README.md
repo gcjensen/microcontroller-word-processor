@@ -10,7 +10,7 @@ Controls
   - < backspaces
   - > moves cursor onto a new line
 
-Built on the FortanaOS, implementing the following libraries:
+Built on Klaus-Peter Zauner's FortanaOS, implementing the following libraries:
 
   - Peter Dannegger's Code for Switch debouncing
   - Steve Gunn's display driver
