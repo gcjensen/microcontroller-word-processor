@@ -1,7 +1,8 @@
 # LaFortuna-Word-Processor
 Simple Word processor for the LaFortuna 8-bit AVR microcontroller board, developed in C.
 
-Controls
+Controls:
+
   - Left/right arrows scroll through the keyboard
   - Centre button selects letter/symbol
   - Up arrow writes current text to the SD card
