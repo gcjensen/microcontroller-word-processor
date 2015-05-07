@@ -5,7 +5,7 @@
 
    Slightly modified by Klaus-Peter Zauner, Feb 2014, Mar 2015.
 
-   For Copyright and License see end of file. 
+   For Copyright and License see end of file.
 
 */
 
@@ -45,27 +45,27 @@ ISR(TIMER0_OVF_vect) {
           && (runningTasks[currentTask] > i) /* Task priority > current task priority */
           && (!tasks[i].running)             /* Task not already running (no self-preemption) */
          ) {
-   
+
          cli();
          tasks[i].elapsedTime = 0;      /* Reset time since last tick */
          tasks[i].running = 1;          /* Mark as running */
          currentTask += 1;
          runningTasks[currentTask] = i; /* Add to runningTasks */
          sei();
-   
+
          tasks[i].state = tasks[i].TaskFct(tasks[i].state); /* Execute tick */
-            
+
          cli();
          tasks[i].running = 0;                 /* Mark as not running */
          runningTasks[currentTask] = idleTask; /* Remove from runningTasks */
          currentTask -= 1;
          sei();
-   
+
       }
       tasks[i].elapsedTime += 1;
    }
 
-   
+
 }
 
 
@@ -80,11 +80,11 @@ void os_init_scheduler() {
            | _BV(WGM01)		/* fast PWM mode */
            | _BV(WGM00);
 
-    TCCR0B |= _BV(CS00)     
+    TCCR0B |= _BV(CS00)
             | _BV(CS01);   /* F_CPU/64, DS p.112 */
 
 
-    /* Interrupts at 488.3 Hz: FCPU/(510*N) with N=64, DS p.105 */  
+    /* Interrupts at 488.3 Hz: FCPU/(510*N) with N=64, DS p.105 */
 
     TIMSK0 = _BV(TOIE0); /* enable overflow interrupt for T0, DS p.113  */
     TCNT0 = 0;
@@ -94,9 +94,9 @@ void os_init_scheduler() {
 void os_led_brightness(uint8_t level) {
 	if (level) {
 		OCR0A = level;
-		DDRB  |=  _BV(PINB7); 
+		DDRB  |=  _BV(PINB7);
 	} else {
-		DDRB  &=  ~_BV(PINB7); 
+		DDRB  &=  ~_BV(PINB7);
 	}
 }
 
@@ -109,7 +109,7 @@ void os_init_scheduler() {
 
     /* Configure 8 bit Timer 0 for 1 ms ISR  */
 	TCCR0A |= _BV(WGM01);   /* Clear Timer on Compare match (CTC, Mode 2), DS p.111 */
-    TCCR0B |= _BV(CS00)     
+    TCCR0B |= _BV(CS00)
             | _BV(CS01);   /* F_CPU/64, DS p.112 */
 
     OCR0A = (uint8_t)(F_CPU / (64UL * 1000) - 1); /* 1 kHz interrupts */
@@ -130,7 +130,7 @@ int os_add_task(int (*fnc)(int), uint32_t period_ms, int initState) {
    int t;
 
    t = tasksNum + 1;
- 
+
    if (t >= MAX_TASKS) {
 	   t = -1;
    } else {
@@ -147,7 +147,7 @@ int os_add_task(int (*fnc)(int), uint32_t period_ms, int initState) {
 	  tasks[t].state = initState;
 	  tasksNum = t; /* New task fully initialized */
    }
-   
+
    return t;
 }
 

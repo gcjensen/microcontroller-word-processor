@@ -121,6 +121,10 @@ int check_switches(int state) {
       calibrate();
 	}
 
+  if (get_switch_long(_BV(SWC))) {
+		display_string("Detected SD card.\n");
+	}
+
   if (get_switch_long(_BV(OS_CD))) {
 		display_string("Detected SD card.\n");
 	}
