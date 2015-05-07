@@ -16,3 +16,10 @@ Built on Klaus-Peter Zauner's FortanaOS, implementing the following libraries:
   - Steve Gunn's display driver
   - ChanN's FAT File System
   - The RIOS scheduler
+
+Known bugs:
+
+  - Strange symbols sometimes appear when reading from
+    the SD card
+  - After reading from the SD card the device has to be
+    restarted to be able to enter text again

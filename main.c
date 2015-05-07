@@ -80,9 +80,6 @@ int check_switches(int state) {
        printKeyboard(-2);
 	}
 
-	if (get_switch_press(_BV(SWS))) {
-  }
-
 	if (get_switch_short(_BV(SWC))) {
       if (alphabet[selector] == '_') {
         saveCharacter(' ');
