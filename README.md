@@ -14,4 +14,5 @@ Built on the FortanaOS, implementing the following libraries:
 
   - Peter Dannegger's Code for Switch debouncing
   - Steve Gunn's display driver
-  - ChanN's FAT File System 
+  - ChanN's FAT File System
+  - The RIOS scheduler
